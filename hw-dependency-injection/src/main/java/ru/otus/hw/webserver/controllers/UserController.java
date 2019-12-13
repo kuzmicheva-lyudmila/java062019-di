@@ -52,8 +52,8 @@ public class UserController {
 
     @PostMapping("/user/save")
     public RedirectView userSave(
-            @ModelAttribute("userName") String userName,
-            @ModelAttribute("userAge") String userAge
+            @ModelAttribute("name") String userName,
+            @ModelAttribute("age") String userAge
     ) {
         User user = new User();
         user.setName(userName);
