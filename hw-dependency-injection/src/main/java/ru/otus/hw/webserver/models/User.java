@@ -7,6 +7,7 @@ import lombok.Setter;
 import net.bytebuddy.implementation.bind.annotation.IgnoreForBinding;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,7 +15,9 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @Entity
-public class User {
+public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue
     private long id;
@@ -22,16 +25,10 @@ public class User {
     private String name;
     private int age;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private AddressDataSet address;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<PhoneDataSet> phones;
-
     public User() {
     }
 
-    public long getId() {
+    long getId() {
         return id;
     }
 
@@ -43,22 +40,12 @@ public class User {
         return age;
     }
 
-    public AddressDataSet getAddress() { return address; }
-
     public void setName(String name) {
         this.name = name;
     }
 
     public void setAge(int age) {
         this.age = age;
-    }
-
-    public void setAddress(AddressDataSet address) {
-        this.address = address;
-    }
-
-    public void setPhones(List<PhoneDataSet> phones) {
-        this.phones = phones;
     }
 
     @Override
