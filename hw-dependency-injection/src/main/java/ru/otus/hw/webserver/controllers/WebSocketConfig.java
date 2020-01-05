@@ -1,4 +1,4 @@
-package ru.otus.hw.webserver.configuration;
+package ru.otus.hw.webserver.controllers;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

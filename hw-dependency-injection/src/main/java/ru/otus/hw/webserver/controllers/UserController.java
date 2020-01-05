@@ -6,7 +6,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import ru.otus.hw.webserver.models.User;
-import ru.otus.hw.webserver.service.UserService;
+import ru.otus.hw.webserver.frontend.UserService;
 
 @Controller
 public class UserController {

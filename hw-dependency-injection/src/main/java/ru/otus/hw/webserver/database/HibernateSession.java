@@ -1,4 +1,4 @@
-package ru.otus.hw.webserver.dao;
+package ru.otus.hw.webserver.database;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;

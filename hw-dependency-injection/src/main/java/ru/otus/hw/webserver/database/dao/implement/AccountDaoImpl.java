@@ -1,15 +1,17 @@
-package ru.otus.hw.webserver.dao;
+package ru.otus.hw.webserver.database.dao.implement;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+import ru.otus.hw.webserver.database.dao.AccountDao;
+import ru.otus.hw.webserver.database.HibernateSession;
 import ru.otus.hw.webserver.models.Account;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 
-@Component("accountDao")
-public class AccountDaoImpl implements Dao<Account, String> {
+@Repository
+public class AccountDaoImpl implements AccountDao {
     public AccountDaoImpl() {
     }
 

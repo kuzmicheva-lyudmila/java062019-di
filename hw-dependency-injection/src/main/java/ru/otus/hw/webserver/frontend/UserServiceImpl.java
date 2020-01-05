@@ -1,18 +1,12 @@
-package ru.otus.hw.webserver.service;
+package ru.otus.hw.webserver.frontend;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.otus.hw.webserver.messagesystem.Message;
-import ru.otus.hw.webserver.messagesystem.MessageClient;
-import ru.otus.hw.webserver.messagesystem.MessageSystem;
-import ru.otus.hw.webserver.messagesystem.MessageType;
-import ru.otus.hw.webserver.dao.Dao;
+import ru.otus.hw.webserver.messagesystem.*;
 import ru.otus.hw.webserver.models.User;
-import ru.otus.hw.webserver.service.handlers.GetUserDataResponseHandler;
+import ru.otus.hw.webserver.frontend.handlers.GetUserDataResponseHandler;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,22 +20,18 @@ public class UserServiceImpl implements UserService {
     private final MessageClient messageClient;
     private final String databaseServiceClientName;
 
-    private final Dao<User, Long> userDao;
-
     public UserServiceImpl(
             MessageSystem messageSystem,
-            ObjectProvider<MessageClient> objectProvider,
             @Value("${message-client.database.name}") String databaseServiceClientName,
-            @Value("${message-client.user.name}") String userServiceClientName,
-            @Qualifier("userDao") Dao<User, Long> userDao
+            @Value("${message-client.user.name}") String userServiceClientName
     ) {
-        this.messageClient = objectProvider.getObject(userServiceClientName, messageSystem);
-        messageClient.addHandler(MessageType.USER_CREATE, new GetUserDataResponseHandler(this));
-        messageClient.addHandler(MessageType.USER_LIST, new GetUserDataResponseHandler(this));
+        ResponseHandler responseHandler = new GetUserDataResponseHandler(this);
+        this.messageClient = new MessageClientImpl(userServiceClientName, messageSystem);
+        this.messageClient.addHandler(MessageType.USER_CREATE, responseHandler);
+        this.messageClient.addHandler(MessageType.USER_LIST, responseHandler);
         messageSystem.addClient(messageClient);
 
         this.databaseServiceClientName = databaseServiceClientName;
-        this.userDao = userDao;
     }
 
     @Override

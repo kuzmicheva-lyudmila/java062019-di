@@ -1,4 +1,4 @@
-package ru.otus.hw.webserver.dao;
+package ru.otus.hw.webserver.database.dao;
 
 import java.util.List;
 

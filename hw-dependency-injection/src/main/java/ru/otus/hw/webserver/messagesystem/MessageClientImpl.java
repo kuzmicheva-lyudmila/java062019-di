@@ -13,7 +13,7 @@ public class MessageClientImpl implements MessageClient {
 
     private final String name;
     private final MessageSystem messageSystem;
-    private final Map<String, RequestHandler> handlers = new ConcurrentHashMap<>();
+    private final Map<String, Handler> handlers = new ConcurrentHashMap<>();
 
     public MessageClientImpl(String name, MessageSystem messageSystem) {
         this.name = name;
@@ -21,8 +21,8 @@ public class MessageClientImpl implements MessageClient {
     }
 
     @Override
-    public void addHandler(MessageType type, RequestHandler requestHandler) {
-        this.handlers.put(type.getValue(), requestHandler);
+    public void addHandler(MessageType type, Handler handler) {
+        this.handlers.put(type.getValue(), handler);
     }
 
     @Override
@@ -43,9 +43,9 @@ public class MessageClientImpl implements MessageClient {
     public void handle(Message msg) {
         logger.info("new message:{}", msg);
         try {
-            RequestHandler requestHandler = handlers.get(msg.getType());
-            if (requestHandler != null) {
-                requestHandler.handle(msg).ifPresent(this::sendMessage);
+            Handler handler = handlers.get(msg.getType());
+            if (handler != null) {
+                handler.handle(msg).ifPresent(this::sendMessage);
             } else {
                 logger.error("handler not found for the message type:{}", msg.getType());
             }

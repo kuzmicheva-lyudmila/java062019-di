@@ -1,7 +1,7 @@
 package ru.otus.hw.webserver.messagesystem;
 
 public interface MessageClient {
-    void addHandler(MessageType type, RequestHandler requestHandler);
+    void addHandler(MessageType type, Handler handler);
 
     boolean sendMessage(Message msg);
 

@@ -1,21 +1,15 @@
-package ru.otus.hw.webserver.service.handlers;
+package ru.otus.hw.webserver.frontend.handlers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import ru.otus.hw.webserver.messagesystem.Message;
-import ru.otus.hw.webserver.messagesystem.MessageType;
-import ru.otus.hw.webserver.messagesystem.RequestHandler;
-import ru.otus.hw.webserver.messagesystem.Serializers;
-import ru.otus.hw.webserver.models.User;
-import ru.otus.hw.webserver.service.UserService;
+import ru.otus.hw.webserver.messagesystem.*;
+import ru.otus.hw.webserver.frontend.UserService;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Component
-public class GetUserDataResponseHandler implements RequestHandler {
+public class GetUserDataResponseHandler implements ResponseHandler {
     private static final Logger logger = LoggerFactory.getLogger(GetUserDataResponseHandler.class);
 
     private final UserService userService;
