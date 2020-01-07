@@ -1,12 +1,11 @@
-package ru.otus.hw.webserver;
+package ru.otus.hw.webserver.frontend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MainApplication {
-
+public class FrontendApplication {
     public static void main(String[] args) {
-        SpringApplication.run(MainApplication.class, args);
+        SpringApplication.run(FrontendApplication.class, args);
     }
 }

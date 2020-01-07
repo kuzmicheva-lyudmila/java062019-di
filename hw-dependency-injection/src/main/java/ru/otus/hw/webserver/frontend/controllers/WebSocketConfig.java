@@ -1,4 +1,4 @@
-package ru.otus.hw.webserver.controllers;
+package ru.otus.hw.webserver.frontend.controllers;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -20,5 +20,4 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/gs-guide-websocket").withSockJS();
     }
-
 }
