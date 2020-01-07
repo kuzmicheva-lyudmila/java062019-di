@@ -1,6 +1,5 @@
 package ru.otus.hw.webserver.database.handlers;
 
-import org.springframework.stereotype.Component;
 import ru.otus.hw.webserver.database.dao.UserDao;
 import ru.otus.hw.webserver.messagesystem.*;
 import ru.otus.hw.webserver.models.User;
@@ -10,7 +9,6 @@ import java.util.Optional;
 
 import static ru.otus.hw.webserver.messagesystem.MessageType.*;
 
-@Component
 public class GetUserDataRequestHandler implements RequestHandler {
     private final UserDao userDao;
 

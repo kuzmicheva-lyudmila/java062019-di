@@ -21,15 +21,13 @@ public class UserServiceImpl implements UserService {
     private final String databaseServiceClientName;
 
     public UserServiceImpl(
-            MessageSystem messageSystem,
-            @Value("${message-client.database.name}") String databaseServiceClientName,
-            @Value("${message-client.user.name}") String userServiceClientName
+            MessageClient frontendMessageClient,
+            @Value("${message-client.database.name}") String databaseServiceClientName
     ) {
         ResponseHandler responseHandler = new GetUserDataResponseHandler(this);
-        this.messageClient = new MessageClientImpl(userServiceClientName, messageSystem);
+        this.messageClient = frontendMessageClient;
         this.messageClient.addHandler(MessageType.USER_CREATE, responseHandler);
         this.messageClient.addHandler(MessageType.USER_LIST, responseHandler);
-        messageSystem.addClient(messageClient);
 
         this.databaseServiceClientName = databaseServiceClientName;
     }

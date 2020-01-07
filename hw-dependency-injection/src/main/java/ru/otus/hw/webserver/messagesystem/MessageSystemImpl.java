@@ -2,14 +2,14 @@ package ru.otus.hw.webserver.messagesystem;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Configuration
+@Service
 public class MessageSystemImpl implements MessageSystem {
     private static final Logger logger = LoggerFactory.getLogger(MessageSystemImpl.class);
     private static final int MESSAGE_QUEUE_SIZE = 1_000;
