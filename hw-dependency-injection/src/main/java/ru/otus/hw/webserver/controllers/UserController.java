@@ -1,66 +1,35 @@
 package ru.otus.hw.webserver.controllers;
 
-import com.sun.istack.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.view.RedirectView;
-import ru.otus.hw.webserver.models.AddressDataSet;
-import ru.otus.hw.webserver.models.PhoneDataSet;
 import ru.otus.hw.webserver.models.User;
-import ru.otus.hw.webserver.service.dbservice.UserService;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import ru.otus.hw.webserver.frontend.UserService;
 
 @Controller
 public class UserController {
-
-    private static final String PARAMETER_USER_NAME = "userName";
-    private static final String PARAMETER_USER_AGE = "userAge";
-    private static final String PARAMETER_USER_ADDRESS = "userAddress";
-    private static final String PARAMETER_USER_PHONE = "userPhone";
-
-    private static final String PAGE_USER_LIST = "userList.html";
-    private static final String PAGE_USER_CREATE = "userCreate.html";
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
+    private final SimpMessagingTemplate template;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService,
+                          SimpMessagingTemplate template) {
         this.userService = userService;
+        this.template = template;
     }
 
-    @GetMapping({"/", "/user/list"})
-    public String userListView(@NotNull Model model) {
-        List<String> users = userService.loadAll().stream()
-                .map(User::toString)
-                .collect(Collectors.toList());
-
-        model.addAttribute("users", users);
-        return PAGE_USER_LIST;
+    @MessageMapping("/list-users")
+    public void userListView() {
+        userService.loadAll(
+            data -> template.convertAndSend("/topic/users", data)
+        );
     }
 
-    @GetMapping("/user/create")
-    public String userCreateView(@NotNull Model model) {
-        model.addAttribute("userName", "");
-        model.addAttribute("userAge", "");
-        return PAGE_USER_CREATE;
+    @MessageMapping("/create-user")
+    public void userSave(User user) {
+        userService.createUser(user, data -> logger.info("the user created success: {}", user.toString()));
     }
-
-    @PostMapping("/user/save")
-    public RedirectView userSave(
-            @ModelAttribute("name") String userName,
-            @ModelAttribute("age") String userAge
-    ) {
-        User user = new User();
-        user.setName(userName);
-        user.setAge(Integer.getInteger(userAge, 10));
-
-        userService.create(user);
-        return new RedirectView("/user/list", true);
-    }
-
 }

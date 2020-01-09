@@ -1,26 +1,29 @@
-package ru.otus.hw.webserver.dao;
+package ru.otus.hw.webserver.database.dao.implement;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+import ru.otus.hw.webserver.database.dao.UserDao;
 import ru.otus.hw.webserver.models.User;
 
 import javax.persistence.EntityManager;
-import java.io.Serializable;
 import java.util.List;
 
-@Component("userDao")
-public class UserDaoImpl implements Dao<User, Long> {
+@Repository
+public class UserDaoImpl implements UserDao {
     private static Logger logger = LoggerFactory.getLogger(UserDaoImpl.class);
+    private final SessionFactory sessionFactory;
 
-    public UserDaoImpl() {
+    public UserDaoImpl(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
     @Override
     public void create(User objectData) {
-        try (Session session = HibernateSession.getSessionFactory().openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.getTransaction();
             transaction.begin();
             session.save(objectData);
@@ -31,7 +34,7 @@ public class UserDaoImpl implements Dao<User, Long> {
 
     @Override
     public void update(User objectData) {
-        try (Session session = HibernateSession.getSessionFactory().openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.getTransaction();
             transaction.begin();
             session.update(objectData);
@@ -42,7 +45,7 @@ public class UserDaoImpl implements Dao<User, Long> {
 
     @Override
     public void delete(User objectData) {
-        try (Session session = HibernateSession.getSessionFactory().openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.getTransaction();
             transaction.begin();
             session.delete(objectData);
@@ -54,7 +57,7 @@ public class UserDaoImpl implements Dao<User, Long> {
     @Override
     public User load(Long id) {
         User user;
-        try (Session session = HibernateSession.getSessionFactory().openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             user = session.get(User.class, id);
             logger.info("DB selected user: {}", user);
         }
@@ -63,7 +66,7 @@ public class UserDaoImpl implements Dao<User, Long> {
 
     @Override
     public List<User> loadAll() {
-        EntityManager entityManager = HibernateSession.getSessionFactory().createEntityManager();
+        EntityManager entityManager = sessionFactory.createEntityManager();
 
         return entityManager.createQuery("select u from User u", User.class)
                 .getResultList();
