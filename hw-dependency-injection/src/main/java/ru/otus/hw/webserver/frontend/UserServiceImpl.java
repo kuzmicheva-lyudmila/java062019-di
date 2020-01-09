@@ -3,10 +3,10 @@ package ru.otus.hw.webserver.frontend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.webserver.messagesystem.*;
 import ru.otus.hw.webserver.models.User;
-import ru.otus.hw.webserver.frontend.handlers.GetUserDataResponseHandler;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,14 +21,10 @@ public class UserServiceImpl implements UserService {
     private final String databaseServiceClientName;
 
     public UserServiceImpl(
-            MessageClient frontendMessageClient,
+            @Lazy MessageClient frontendMessageClient,
             @Value("${message-client.database.name}") String databaseServiceClientName
     ) {
-        ResponseHandler responseHandler = new GetUserDataResponseHandler(this);
         this.messageClient = frontendMessageClient;
-        this.messageClient.addHandler(MessageType.USER_CREATE, responseHandler);
-        this.messageClient.addHandler(MessageType.USER_LIST, responseHandler);
-
         this.databaseServiceClientName = databaseServiceClientName;
     }
 

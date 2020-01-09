@@ -5,17 +5,23 @@ import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import ru.otus.hw.webserver.models.Account;
 import ru.otus.hw.webserver.models.AddressDataSet;
 import ru.otus.hw.webserver.models.PhoneDataSet;
 import ru.otus.hw.webserver.models.User;
 
-public class HibernateSession {
-    private static final SessionFactory sessionFactory = createSessionFactory();
+@Configuration
+public class HibernateSessionCnfg {
 
-    public static SessionFactory createSessionFactory() {
-        Configuration configuration = new Configuration()
+    @Bean
+    SessionFactory sessionFactory() {
+        return createSessionFactory();
+    }
+
+    private SessionFactory createSessionFactory() {
+        org.hibernate.cfg.Configuration configuration = new org.hibernate.cfg.Configuration()
                 .configure("hibernate.cfg.xml");
 
         StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
@@ -30,9 +36,5 @@ public class HibernateSession {
                 .build();
 
         return metadata.getSessionFactoryBuilder().build();
-    }
-
-    public static SessionFactory getSessionFactory() {
-        return sessionFactory;
     }
 }
