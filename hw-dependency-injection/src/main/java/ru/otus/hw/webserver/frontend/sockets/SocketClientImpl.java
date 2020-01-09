@@ -16,19 +16,12 @@ public class SocketClientImpl implements SocketClient {
     private final ObjectMapper mapper = new ObjectMapper();
 
     private final SocketURL messageSystemURL;
-    private final SocketURL frontendURL;
-    private final String messageClientName;
 
     public SocketClientImpl(
             @Value("${messagesystem.host}") String messageSystemHost,
-            @Value("${messagesystem.port}") int messageSystemPort,
-            @Value("${frontend.host}") String frontendHost,
-            @Value("${frontend.port}") int frontendPort,
-            @Value("${message-client.frontend.name}") String messageClientName
+            @Value("${messagesystem.port}") int messageSystemPort
     ) {
-        this.messageSystemURL = new SocketURL(messageSystemHost, messageSystemPort);
-        this.frontendURL = new SocketURL(frontendHost, frontendPort);
-        this.messageClientName = messageClientName;
+        this.messageSystemURL = new SocketURL(messageSystemHost, messageSystemPort, "");
     }
 
     @Override
@@ -43,15 +36,5 @@ public class SocketClientImpl implements SocketClient {
         } catch (Exception ex) {
             logger.error("frontend -> sendMessage error", ex);
         }
-    }
-
-    @Override
-    public String getMessageClientName() {
-        return messageClientName;
-    }
-
-    @Override
-    public SocketURL getFrontendURL() {
-        return frontendURL;
     }
 }

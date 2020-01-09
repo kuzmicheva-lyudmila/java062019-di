@@ -33,7 +33,7 @@
        }
 
        function saveUser() {
-           stompClient.send("/app/create-user", {}, JSON.stringify({'name': $("#name").val(), 'age': $("#age").val()}));
+           stompClient.send("/app/create-user", {}, JSON.stringify({'fullname': $("#fullname").val(), 'age': $("#age").val()}));
        }
 
        function getUsers() {

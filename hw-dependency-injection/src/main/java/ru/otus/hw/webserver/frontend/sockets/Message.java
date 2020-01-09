@@ -1,15 +1,18 @@
 package ru.otus.hw.webserver.frontend.sockets;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
-@Getter
-@Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Message {
-    private final String clientName;
-    private final String host;
-    private final int port;
+    private String clientName;
+    private String host;
+    private int port;
+    private String toClientName;
+    private String toHost;
+    private int toPort;
 
-    private final String type;
-    private final String parameters;
+    private String type;
+    private String parameters;
 }

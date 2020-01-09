@@ -3,11 +3,13 @@ package ru.otus.hw.webserver.database.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.webserver.database.dao.PersonRepository;
 import ru.otus.hw.webserver.database.models.Person;
 import ru.otus.hw.webserver.database.sockets.Message;
 import ru.otus.hw.webserver.database.sockets.SocketClient;
+import ru.otus.hw.webserver.database.sockets.SocketURL;
 
 import java.io.IOException;
 
@@ -21,13 +23,18 @@ public class DatabaseServiceImpl implements DatabaseService {
 
     private final PersonRepository personRepository;
     private final SocketClient socketClient;
+    private final SocketURL databaseURL;
 
     public DatabaseServiceImpl(
             PersonRepository personRepository,
-            SocketClient socketClient
+            SocketClient socketClient,
+            @Value("${database.host}") String databaseHost,
+            @Value("${database.port}") int databasePort,
+            @Value("${message-client.database.name}") String databaseClientName
     ) {
         this.personRepository = personRepository;
         this.socketClient = socketClient;
+        this.databaseURL = new SocketURL(databaseHost, databasePort, databaseClientName);
     }
 
     @Override
@@ -35,10 +42,32 @@ public class DatabaseServiceImpl implements DatabaseService {
         if (message.getType().equals(MESSAGE_TYPE_USER_CREATE)) {
             Person person = mapper.readValue(message.getParameters(), Person.class);
             personRepository.save(person);
-            socketClient.sendMessage(message);
+            socketClient.sendMessage(
+                    new Message(
+                        databaseURL.getClientName(),
+                        databaseURL.getHost(),
+                        databaseURL.getPort(),
+                        message.getClientName(),
+                        message.getHost(),
+                        message.getPort(),
+                        message.getType(),
+                        message.getParameters()
+                      )
+            );
         } else if (message.getType().equals(MESSAGE_TYPE_USER_LIST)) {
-            message.setParameters(personRepository.findAll().toString());
-            socketClient.sendMessage(message);
+            String parameters = personRepository.findAll().toString();
+            socketClient.sendMessage(
+                    new Message(
+                            databaseURL.getClientName(),
+                            databaseURL.getHost(),
+                            databaseURL.getPort(),
+                            message.getClientName(),
+                            message.getHost(),
+                            message.getPort(),
+                            message.getType(),
+                            parameters
+                    )
+            );
         } else {
             logger.error("database -> take message: unknown message type {}", message.toString());
         }

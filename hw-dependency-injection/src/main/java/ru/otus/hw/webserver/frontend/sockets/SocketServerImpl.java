@@ -18,6 +18,8 @@ public class SocketServerImpl implements SocketServer {
     private static Logger logger = LoggerFactory.getLogger(SocketServerImpl.class);
     private final ObjectMapper mapper = new ObjectMapper();
 
+    private static String MESSAGE_TYPE_REGISTER_CLIENT = "RegisterClient";
+
     private final int frontendPort;
 
     private final FrontendService frontendService;
@@ -29,11 +31,25 @@ public class SocketServerImpl implements SocketServer {
     });
 
     public SocketServerImpl(
+            @Value("${frontend.host}") String frontendHost,
             @Value("${frontend.port}") int frontendPort,
-            FrontendService frontendService
-    ) {
+            @Value("${message-client.frontend.name}") String messageClientName,
+            FrontendService frontendService,
+            SocketClient socketClient
+    ) throws IOException {
         this.frontendPort = frontendPort;
         this.frontendService = frontendService;
+        Message message = new Message(
+                messageClientName,
+                frontendHost,
+                frontendPort,
+                "",
+                "",
+                0,
+                MESSAGE_TYPE_REGISTER_CLIENT,
+                ""
+        );
+        socketClient.sendMessage(message);
         msgProcessor.submit(this::go);
     }
 

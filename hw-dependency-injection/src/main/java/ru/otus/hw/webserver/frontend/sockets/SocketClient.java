@@ -4,8 +4,4 @@ import java.io.IOException;
 
 public interface SocketClient {
     void sendMessage(Message message) throws IOException;
-
-    String getMessageClientName();
-
-    SocketURL getFrontendURL();
 }

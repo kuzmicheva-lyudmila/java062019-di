@@ -12,4 +12,7 @@ public class SocketURL {
 
     @NonNull
     private final int port;
+
+    @NonNull
+    private final String clientName;
 }

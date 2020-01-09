@@ -1,4 +1,4 @@
-package ru.otus.hw.webserver.database.sockets;
+package ru.otus.hw.webserver.messagesystem.sockets;
 
 import lombok.*;
 
