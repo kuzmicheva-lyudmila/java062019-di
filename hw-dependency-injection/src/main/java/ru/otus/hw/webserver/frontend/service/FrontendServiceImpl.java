@@ -6,38 +6,52 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import ru.otus.hw.messageserver.Message;
+import ru.otus.hw.messageserver.SocketClient;
+import ru.otus.hw.messageserver.SocketURL;
 import ru.otus.hw.webserver.frontend.controllers.Person;
-import ru.otus.hw.webserver.frontend.sockets.Message;
-import ru.otus.hw.webserver.frontend.sockets.SocketClient;
-import ru.otus.hw.webserver.frontend.sockets.SocketURL;
 
 import java.io.IOException;
 
 @Service
 public class FrontendServiceImpl implements FrontendService {
-    private static String MESSAGE_TYPE_USER_LIST = "UserList";
-    private static String MESSAGE_TYPE_USER_CREATE = "UserCreate";
+    private static final String MESSAGE_TYPE_USER_LIST = "UserList";
+    private static final String MESSAGE_TYPE_USER_CREATE = "UserCreate";
+    private static final String MESSAGE_TYPE_REGISTER_CLIENT = "RegisterClient";
 
     private static Logger logger = LoggerFactory.getLogger(FrontendServiceImpl.class);
     private final ObjectMapper mapper = new ObjectMapper();
 
     private final SocketClient socketClient;
     private final SimpMessagingTemplate template;
-    private final String databaseClientName;
+    private final String backendClientName;
     private final SocketURL frontendURL;
+    private final SocketURL messageSystemURL;
 
     public FrontendServiceImpl(
+            SocketURL frontendURL,
+            SocketURL messageSystemURL,
             SocketClient socketClient,
             SimpMessagingTemplate template,
-            @Value("${frontend.host}") String frontendHost,
-            @Value("${frontend.port}") int frontendPort,
-            @Value("${message-client.frontend.name}") String messageClientName,
-            @Value("${message-client.database.name}") String databaseClientName
+            @Value("${message-client.backend.name}") String backendClientName
     ) {
         this.socketClient = socketClient;
         this.template = template;
-        this.databaseClientName = databaseClientName;
-        this.frontendURL = new SocketURL(frontendHost, frontendPort, messageClientName);
+        this.backendClientName = backendClientName;
+        this.frontendURL = frontendURL;
+        this.messageSystemURL = messageSystemURL;
+
+        Message message = new Message(
+                frontendURL.getClientName(),
+                frontendURL.getHost(),
+                frontendURL.getPort(),
+                "",
+                "",
+                0,
+                MESSAGE_TYPE_REGISTER_CLIENT,
+                ""
+        );
+        socketClient.sendMessageToURL(message, messageSystemURL);
     }
 
     @Override
@@ -46,13 +60,13 @@ public class FrontendServiceImpl implements FrontendService {
                 frontendURL.getClientName(),
                 frontendURL.getHost(),
                 frontendURL.getPort(),
-                databaseClientName,
+                backendClientName,
                 "",
                 0,
                 MESSAGE_TYPE_USER_CREATE,
                 mapper.writeValueAsString(person)
         );
-        socketClient.sendMessage(message);
+        socketClient.sendMessageToURL(message, messageSystemURL);
     }
 
     @Override
@@ -61,23 +75,26 @@ public class FrontendServiceImpl implements FrontendService {
                 frontendURL.getClientName(),
                 frontendURL.getHost(),
                 frontendURL.getPort(),
-                databaseClientName,
+                backendClientName,
                 "",
                 0,
                 MESSAGE_TYPE_USER_LIST,
                 ""
         );
-        socketClient.sendMessage(message);
+        socketClient.sendMessageToURL(message, messageSystemURL);
     }
 
     @Override
-    public void takeMessage(Message message) {
+    public boolean getMessage(Message message) {
         if (message.getType().equals(MESSAGE_TYPE_USER_CREATE)) {
             logger.info("the user created success");
+            return true;
         } else if (message.getType().equals(MESSAGE_TYPE_USER_LIST)) {
             template.convertAndSend("/topic/users", message.getParameters());
+            return true;
         } else {
             logger.error("frontend -> take message: unknown message type {}", message.toString());
+            return false;
         }
     }
 }

@@ -3,7 +3,7 @@ package ru.otus.hw.webserver.messagesystem.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.otus.hw.webserver.messagesystem.sockets.SocketURL;
+import ru.otus.hw.messageserver.SocketURL;
 
 import java.util.Objects;
 

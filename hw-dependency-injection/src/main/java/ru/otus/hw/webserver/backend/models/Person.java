@@ -1,4 +1,4 @@
-package ru.otus.hw.webserver.database.models;
+package ru.otus.hw.webserver.backend.models;
 
 import lombok.Getter;
 

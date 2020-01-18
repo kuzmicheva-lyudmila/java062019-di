@@ -3,8 +3,8 @@ package ru.otus.hw.webserver.messagesystem.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import ru.otus.hw.webserver.messagesystem.sockets.Message;
-import ru.otus.hw.webserver.messagesystem.sockets.SocketClient;
+import ru.otus.hw.messageserver.Message;
+import ru.otus.hw.messageserver.SocketClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ public class MessageSystemImpl implements MessageSystem {
     private final Map<String, List<MessageClient>> clientMap = new ConcurrentHashMap<>();
     private final BlockingQueue<Message> messageQueue = new ArrayBlockingQueue<>(MESSAGE_QUEUE_SIZE);
 
-    private final SocketClient socketClient;
+    private final SocketClient messageSystemClient;
 
     private final ExecutorService msgProcessor = Executors.newSingleThreadExecutor(runnable -> {
         Thread thread = new Thread(runnable);
@@ -55,8 +55,8 @@ public class MessageSystemImpl implements MessageSystem {
         }
     });
 
-    public MessageSystemImpl(SocketClient socketClient) {
-        this.socketClient = socketClient;
+    public MessageSystemImpl(SocketClient messageSystemClient) {
+        this.messageSystemClient = messageSystemClient;
         msgProcessor.submit(this::msgProcessor);
     }
 
@@ -114,7 +114,7 @@ public class MessageSystemImpl implements MessageSystem {
         try {
             msg.setToHost(msClient.getSocketURL().getHost());
             msg.setToPort(msClient.getSocketURL().getPort());
-            socketClient.sendMessage(msg);
+            messageSystemClient.sendMessage(msg);
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
             logger.error("message:{}", msg);
@@ -165,7 +165,7 @@ public class MessageSystemImpl implements MessageSystem {
     }
 
     @Override
-    public boolean newMessage(Message msg) {
+    public boolean getMessage(Message msg) {
         if (runFlag.get()) {
             if (msg.getType().equals(MESSAGE_TYPE_REGISTER_CLIENT)) {
                 addClient(

@@ -91,6 +91,11 @@
             <version>2.2.0.RELEASE</version>
         </dependency>
 
+        <dependency>
+            <groupId>ru.otus.hw.messageserver</groupId>
+            <artifactId>sockets</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
